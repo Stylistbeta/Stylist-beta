@@ -1,0 +1,2 @@
+import Link from "next/link";
+export function Logo(){return <Link href="/" className="group flex items-center gap-2" aria-label="Stylist Beta etusivu"><span className="grid size-9 place-items-center rounded-full bg-[#17151d] text-sm font-bold text-white transition-transform group-hover:-rotate-6">SB</span><span className="text-xl font-extrabold tracking-[-.04em]">Stylist Beta<span className="text-[#6d4aff]">.</span></span></Link>}
