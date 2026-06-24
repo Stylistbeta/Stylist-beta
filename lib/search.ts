@@ -2,6 +2,7 @@ import type { Professional, ProType } from "@/data/professionals";
 
 export type AvailabilityFilter = "" | "today" | "week";
 export type SearchFilters = {
+  query: string;
   city: string;
   category: string;
   maxPrice: string;
@@ -10,6 +11,7 @@ export type SearchFilters = {
 };
 
 export const emptyFilters: SearchFilters = {
+  query: "",
   city: "",
   category: "",
   maxPrice: "",
@@ -24,8 +26,18 @@ export function filterProfessionals(
   filters: SearchFilters,
 ) {
   return items.filter((professional) => {
+    const searchText = normalize([
+      professional.name,
+      professional.category,
+      professional.city,
+      professional.area,
+      professional.description,
+      ...professional.services,
+    ].join(" "));
+    const matchesQuery = !filters.query || searchText.includes(normalize(filters.query));
     const matchesCity = !filters.city || normalize(professional.city).includes(normalize(filters.city));
-    const matchesCategory = !filters.category || normalize(professional.category) === normalize(filters.category);
+    const matchesCategory = !filters.category || [professional.category, ...professional.services]
+      .some((value) => normalize(value).includes(normalize(filters.category)));
     const matchesPrice = !filters.maxPrice || professional.priceFrom <= Number(filters.maxPrice);
     const matchesType = !filters.type || professional.type === filters.type;
     const matchesAvailability = !filters.availability || (
@@ -34,7 +46,7 @@ export function filterProfessionals(
         : professional.today || normalize(professional.availability).includes("viikolla")
     );
 
-    return matchesCity && matchesCategory && matchesPrice && matchesType && matchesAvailability;
+    return matchesQuery && matchesCity && matchesCategory && matchesPrice && matchesType && matchesAvailability;
   });
 }
 

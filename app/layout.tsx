@@ -6,11 +6,11 @@ import { siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Stylist Beta – löydä parturit, kampaajat ja kauneusalan tekijät",
-  description: "Etsi partureita, kampaamoita, kynsiteknikoita, ripsitekijöitä ja muita kauneusalan tekijöitä ympäri Suomen.",
+  title: "Stylist – löydä parturit, kampaajat ja kauneusalan tekijät",
+  description: "Stylist auttaa löytämään parturit, kampaajat, kynsiteknikot, ripsiteknikot ja muut kauneusalan tekijät kaupungin ja palvelun perusteella.",
   openGraph: {
-    title: "Stylist Beta – löydä kauneusalan tekijä läheltäsi",
-    description: "Parturit, kampaamot ja kauneusalan tekijät ympäri Suomen yhdessä palvelussa.",
+    title: "Stylist – löydä parturit, kampaajat ja kauneusalan tekijät",
+    description: "Stylist auttaa löytämään parturit, kampaajat, kynsiteknikot, ripsiteknikot ja muut kauneusalan tekijät kaupungin ja palvelun perusteella.",
     url: siteUrl,
     siteName: "Stylist Beta",
     locale: "fi_FI",
