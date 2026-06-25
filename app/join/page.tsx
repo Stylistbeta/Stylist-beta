@@ -3,6 +3,9 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight, Check, Eye, Mail, Sparkles, Users } from "lucide-react";
 import { cities, contactEmail, serviceCategories } from "@/lib/options";
+import { isValidWorkSampleUrl } from "@/lib/work-samples";
+
+const workSampleFieldNames = ["image1", "image2", "image3", "image4"] as const;
 
 const fieldLabels: Record<string, string> = {
   makerName: "Tekijän nimi",
@@ -16,15 +19,36 @@ const fieldLabels: Record<string, string> = {
   instagram: "Instagram-linkki",
   tiktok: "TikTok-linkki",
   booking: "Ajanvarauslinkki",
+  image1: "Kuvan linkki 1",
+  image2: "Kuvan linkki 2",
+  image3: "Kuvan linkki 3, vapaaehtoinen",
+  image4: "Kuvan linkki 4, vapaaehtoinen",
   introduction: "Lyhyt esittely",
 };
 
 export default function JoinPage() {
   const [sent, setSent] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const submitProfile = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const workSampleUrls = workSampleFieldNames
+      .map((name) => String(formData.get(name) || "").trim())
+      .filter(Boolean);
+
+    setFormError(null);
+
+    if (workSampleUrls.length === 1) {
+      setFormError("Lisää vähintään kaksi työnäytekuvaa tai jätä kaikki kuvalinkit tyhjiksi.");
+      return;
+    }
+
+    if (workSampleUrls.some((url) => !isValidWorkSampleUrl(url, { allowRelative: false }))) {
+      setFormError("Tarkista työnäytekuvien linkit. Käytä kokonaisia http- tai https-alkuisia URL-osoitteita.");
+      return;
+    }
+
     const lines = Object.entries(fieldLabels).map(([name, label]) => {
       const value = String(formData.get(name) || "Ei ilmoitettu").trim() || "Ei ilmoitettu";
       return `${label}: ${value}`;
@@ -153,6 +177,33 @@ export default function JoinPage() {
             <Field label="Ajanvarauslinkki" full>
               <input name="booking" type="url" inputMode="url" placeholder="https://timma.fi/... tai muu ajanvarausosoite" />
             </Field>
+            <div className="mt-2 rounded-2xl border border-[#6d4aff]/15 bg-[#f5f2ff] p-5 sm:col-span-2">
+              <p className="text-xs font-bold uppercase tracking-[.16em] text-[#6d4aff]">Työnäytteet</p>
+              <h3 className="mt-2 text-xl font-extrabold">Lisää työnäytekuvia profiiliisi.</h3>
+              <p className="mt-3 text-sm leading-6 text-black/55">
+                Voit jättää kuvat tässä vaiheessa tyhjiksi. Jos lisäät työnäytteitä, lisää vähintään kaksi toimivaa kuvalinkkiä.
+              </p>
+              <p className="mt-3 text-sm leading-6 text-black/55">
+                Lisää vain kuvia, joihin sinulla on lupa. Jos kuvassa näkyy asiakas tunnistettavasti, varmista asiakkaan suostumus ennen kuvan lähettämistä.
+              </p>
+            </div>
+            <Field label="Kuvan linkki 1">
+              <input name="image1" type="url" inputMode="url" placeholder="https://..." />
+            </Field>
+            <Field label="Kuvan linkki 2">
+              <input name="image2" type="url" inputMode="url" placeholder="https://..." />
+            </Field>
+            <Field label="Kuvan linkki 3, vapaaehtoinen">
+              <input name="image3" type="url" inputMode="url" placeholder="https://..." />
+            </Field>
+            <Field label="Kuvan linkki 4, vapaaehtoinen">
+              <input name="image4" type="url" inputMode="url" placeholder="https://..." />
+            </Field>
+            {formError ? (
+              <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold leading-6 text-red-800 sm:col-span-2">
+                {formError}
+              </div>
+            ) : null}
             <Field label="Lyhyt esittely *" full>
               <textarea name="introduction" required rows={6} placeholder="Kerro osaamisestasi, tyylistäsi ja siitä, kenelle palvelusi sopivat." />
             </Field>

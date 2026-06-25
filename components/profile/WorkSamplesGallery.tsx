@@ -1,11 +1,11 @@
 import { Images } from "lucide-react";
 import type { WorkSample } from "@/data/professionals";
-import { getVisibleWorkSamples } from "@/lib/work-samples";
+import { getGalleryWorkSamples } from "@/lib/work-samples";
 
 export function WorkSamplesGallery({ samples }: { samples: WorkSample[] }) {
-  const visibleSamples = getVisibleWorkSamples(samples);
+  const visibleSamples = getGalleryWorkSamples(samples);
 
-  if (visibleSamples.length < 2) return null;
+  if (visibleSamples.length === 0) return null;
   const isTwoImageGallery = visibleSamples.length === 2;
 
   return (

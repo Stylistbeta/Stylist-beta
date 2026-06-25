@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Clock3, MapPin, Sparkles, Star } from "lucide-react";
 import type { Professional } from "@/data/professionals";
+import { getPreviewWorkSample } from "@/lib/work-samples";
 import { TypeBadge } from "./Badge";
 
 const gradients: Record<string, string> = {
@@ -19,30 +20,44 @@ export function WorkVisual({
   tone = "violet",
   name,
   className = "",
+  showBadge = true,
 }: {
   tone?: string;
   name: string;
   className?: string;
+  showBadge?: boolean;
 }) {
   return (
     <div className={`relative overflow-hidden bg-gradient-to-br ${gradients[tone] || gradients.violet} ${className}`}>
       <div className="absolute -right-8 -top-8 size-36 rounded-full border-[22px] border-white/20" />
       <div className="absolute left-1/2 top-1/2 size-28 -translate-x-1/2 -translate-y-1/2 rotate-12 rounded-[38%] bg-white/10 backdrop-blur-sm" />
       <div className="absolute bottom-5 left-5 font-display text-5xl text-white/90">{name.charAt(0)}</div>
-      <span className="absolute bottom-5 right-5 rounded-full bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-white backdrop-blur">
-        Esimerkkiprofiili
-      </span>
+      {showBadge ? (
+        <span className="absolute bottom-5 right-5 rounded-full bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.12em] text-white backdrop-blur">
+          Esimerkkiprofiili
+        </span>
+      ) : null}
     </div>
   );
 }
 
 export function ProfessionalCard({ pro }: { pro: Professional }) {
   const hasBookingLink = /^https?:\/\//.test(pro.bookingUrl);
+  const previewSample = getPreviewWorkSample(pro.workSamples);
 
   return (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[26px] border border-black/8 bg-white transition duration-300 hover:-translate-y-1 hover:border-[#6d4aff]/20 hover:shadow-[0_22px_55px_rgba(25,20,45,.12)]">
       <Link href={`/professional/${pro.id}`} className="relative block overflow-hidden">
-        <WorkVisual tone={pro.images[0]} name={pro.name} className="h-48 transition duration-500 group-hover:scale-[1.03]" />
+        <WorkVisual tone={pro.images[0]} name={pro.name} showBadge={!previewSample} className="h-48 transition duration-500 group-hover:scale-[1.03]" />
+        {previewSample ? (
+          <span className="absolute bottom-4 right-4 flex max-w-[180px] items-center gap-2 rounded-2xl border border-white/70 bg-white/95 p-1.5 pr-3 text-left shadow-xl shadow-black/10 backdrop-blur">
+            <img src={previewSample.src} alt={previewSample.alt} loading="lazy" className="size-14 shrink-0 rounded-xl object-cover" />
+            <span className="min-w-0">
+              <span className="block text-[10px] font-extrabold uppercase tracking-[.12em] text-[#6d4aff]">Työnäyte</span>
+              <span className="mt-0.5 hidden max-w-[96px] truncate text-[11px] font-bold text-black/70 sm:block">{previewSample.alt}</span>
+            </span>
+          </span>
+        ) : null}
         {pro.featured && (
           <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-extrabold text-[#5a38e6] shadow-sm backdrop-blur">
             <Sparkles className="size-3" />
